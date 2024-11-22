@@ -1,5 +1,6 @@
 import React from 'react';
-import { Search, Phone, Video, MoreVertical, Send, Image as ImageIcon } from 'lucide-react';
+import { Search, Phone, Video, MoreVertical, Send, Image as ImageIcon, ArrowLeft } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 const chats = [
   {
@@ -38,12 +39,27 @@ const messages = [
 ];
 
 export function Messages() {
+  const [selectedChat, setSelectedChat] = React.useState<typeof chats[0] | null>(null);
+  const navigate = useNavigate();
+  const messagesEndRef = React.useRef<HTMLDivElement>(null);
+
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  React.useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
+
   return (
-    <div className="max-w-7xl mx-auto h-[calc(100vh-4rem)]">
-      <div className="grid md:grid-cols-[350px,1fr] h-full">
-        {/* Chat List */}
-        <div className="border-r bg-white">
-          <div className="p-4 border-b">
+    <div className="h-[100dvh] bg-gray-50">
+      {/* Mobile Chat List */}
+      {!selectedChat && (
+        <div className="h-full">
+          <div className="bg-white border-b px-4 py-3">
+            <h1 className="text-xl font-semibold">Messages</h1>
+          </div>
+          <div className="p-4 border-b bg-white">
             <div className="relative">
               <input
                 type="text"
@@ -53,16 +69,17 @@ export function Messages() {
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
             </div>
           </div>
-          <div className="overflow-y-auto h-[calc(100vh-8rem)]">
+          <div className="overflow-y-auto h-[calc(100dvh-8rem)]">
             {chats.map((chat) => (
-              <div
+              <button
                 key={chat.id}
-                className="flex items-center gap-4 p-4 hover:bg-gray-50 cursor-pointer"
+                onClick={() => setSelectedChat(chat)}
+                className="w-full flex items-center gap-4 p-4 hover:bg-gray-50 border-b"
               >
                 <div className="w-12 h-12 bg-[#0487b3] rounded-full flex items-center justify-center text-white font-semibold">
                   {chat.avatar}
                 </div>
-                <div className="flex-grow min-w-0">
+                <div className="flex-grow min-w-0 text-left">
                   <div className="flex items-center justify-between">
                     <h3 className="font-medium truncate">{chat.name}</h3>
                     <span className="text-sm text-gray-500">{chat.time}</span>
@@ -74,30 +91,34 @@ export function Messages() {
                     {chat.unread}
                   </div>
                 )}
-              </div>
+              </button>
             ))}
           </div>
         </div>
+      )}
 
-        {/* Chat Window */}
-        <div className="flex flex-col bg-gray-50">
-          {/* Chat Header */}
-          <div className="flex items-center justify-between p-4 bg-white border-b">
-            <div className="flex items-center gap-4">
-              <div className="w-10 h-10 bg-[#0487b3] rounded-full flex items-center justify-center text-white font-semibold">
-                P
+      {/* Mobile Chat Window */}
+      {selectedChat && (
+        <div className="h-full flex flex-col">
+          <div className="bg-white border-b px-4 py-3 flex items-center gap-3">
+            <button 
+              onClick={() => setSelectedChat(null)}
+              className="p-1 -ml-1 hover:bg-gray-100 rounded-full"
+            >
+              <ArrowLeft className="w-5 h-5" />
+            </button>
+            <div className="flex items-center gap-3 flex-grow">
+              <div className="w-8 h-8 bg-[#0487b3] rounded-full flex items-center justify-center text-white font-semibold">
+                {selectedChat.avatar}
               </div>
               <div>
-                <h3 className="font-medium">Premium Motors</h3>
-                <p className="text-sm text-gray-500">Online</p>
+                <h3 className="font-medium">{selectedChat.name}</h3>
+                <p className="text-xs text-gray-500">Online</p>
               </div>
             </div>
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-2">
               <button className="p-2 hover:bg-gray-100 rounded-full">
                 <Phone className="w-5 h-5" />
-              </button>
-              <button className="p-2 hover:bg-gray-100 rounded-full">
-                <Video className="w-5 h-5" />
               </button>
               <button className="p-2 hover:bg-gray-100 rounded-full">
                 <MoreVertical className="w-5 h-5" />
@@ -105,7 +126,6 @@ export function Messages() {
             </div>
           </div>
 
-          {/* Messages */}
           <div className="flex-grow overflow-y-auto p-4 space-y-4">
             {messages.map((message) => (
               <div
@@ -113,7 +133,7 @@ export function Messages() {
                 className={`flex ${message.isSender ? 'justify-end' : 'justify-start'}`}
               >
                 <div
-                  className={`max-w-[70%] rounded-lg p-3 ${
+                  className={`max-w-[80%] rounded-2xl p-3 ${
                     message.isSender
                       ? 'bg-[#0487b3] text-white'
                       : 'bg-white border'
@@ -126,9 +146,9 @@ export function Messages() {
                 </div>
               </div>
             ))}
+            <div ref={messagesEndRef} />
           </div>
 
-          {/* Message Input */}
           <div className="p-4 bg-white border-t">
             <div className="flex items-center gap-2">
               <button className="p-2 hover:bg-gray-100 rounded-full">
@@ -145,7 +165,7 @@ export function Messages() {
             </div>
           </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }

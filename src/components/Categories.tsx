@@ -1,5 +1,5 @@
 import React from 'react';
-import { Car, Home, Briefcase, Package, Sofa, Smartphone, Users, ArrowRight } from 'lucide-react';
+import { Car, Home, Briefcase, Package, Sofa, Smartphone, Users, ArrowRight, Building2, Tv } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 const categories = [
@@ -57,6 +57,61 @@ const categories = [
       { name: 'Secretarial / Front Office', isNew: false },
     ],
     viewAll: 'All in Jobs'
+  },
+  {
+    title: 'Community',
+    icon: Users,
+    items: [
+      { name: 'Freelancers', isNew: false },
+      { name: 'Home Maintenance', isNew: false },
+      { name: 'Other Services', isNew: false },
+      { name: 'Tutors & Classes', isNew: false },
+    ],
+    viewAll: 'All in Community'
+  },
+  {
+    title: 'Business & Industrial',
+    icon: Building2,
+    items: [
+      { name: 'Businesses for Sale', isNew: false },
+      { name: 'Construction', isNew: false },
+      { name: 'Food & Beverage', isNew: false },
+      { name: 'Industrial Supplies', isNew: false },
+    ],
+    viewAll: 'All in Business & Industrial'
+  },
+  {
+    title: 'Home Appliances',
+    icon: Tv,
+    items: [
+      { name: 'Large Appliances / White Goods', isNew: false },
+      { name: 'Small Kitchen Appliances', isNew: false },
+      { name: 'Outdoor Appliances', isNew: false },
+      { name: 'Small Bathroom Appliances', isNew: false },
+    ],
+    viewAll: 'All in Home Appliances'
+  },
+  {
+    title: 'Furniture, Home & Garden',
+    icon: Sofa,
+    items: [
+      { name: 'Furniture', isNew: false },
+      { name: 'Home Accessories', isNew: false },
+      { name: 'Garden & Outdoor', isNew: false },
+      { name: 'Lighting & Fans', isNew: false },
+    ],
+    viewAll: 'All in Furniture, Home & Garden'
+  },
+  {
+    title: 'Mobile Phones & Tablets',
+    icon: Smartphone,
+    items: [
+      { name: 'Mobile Phones', isNew: false },
+      { name: 'Mobile Phone & Tablet Accessories', isNew: false },
+      { name: 'Tablets', isNew: false },
+      { name: 'Other Mobile Phones & Tablets', isNew: false },
+    ],
+    viewAll: 'All in Mobile Phones & Tablets'
   }
 ];
 

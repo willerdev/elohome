@@ -133,9 +133,9 @@ function ListingSection({ title, items }: { title: string; items: typeof carList
               <Link
                 key={item.id}
                 to={`/product/${item.id}`}
-                className="flex-none w-[280px] group"
+                className="flex-none w-[280px] md:w-[280px] w-[196px] group"
               >
-                <div className="h-[210px] relative overflow-hidden rounded-lg mb-3">
+                <div className="h-[210px] md:h-[210px] h-[147px] relative overflow-hidden rounded-lg mb-3">
                   <img
                     src={item.image}
                     alt={item.title}

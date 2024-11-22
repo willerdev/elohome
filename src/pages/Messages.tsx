@@ -1,6 +1,7 @@
 import React from 'react';
 import { Search, Phone, Video, MoreVertical, Send, Image as ImageIcon, ArrowLeft } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { PageHeader } from '../components/PageHeader';
 
 const chats = [
   {
@@ -53,12 +54,13 @@ export function Messages() {
 
   return (
     <div className="h-[100dvh] bg-gray-50">
+      <PageHeader 
+        title="Messages"
+        onBack={() => navigate('/')}
+      />
       {/* Mobile Chat List */}
       {!selectedChat && (
         <div className="h-full">
-          <div className="bg-white border-b px-4 py-3">
-            <h1 className="text-xl font-semibold">Messages</h1>
-          </div>
           <div className="p-4 border-b bg-white">
             <div className="relative">
               <input

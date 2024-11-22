@@ -1,5 +1,6 @@
 import React from 'react';
 import { ArrowLeft, ArrowRight, Image as ImageIcon, X, Plus } from 'lucide-react';
+import { PageHeader } from '../components/PageHeader';
 
 interface Step {
   title: string;
@@ -183,7 +184,15 @@ export function PostListing() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
+    <div className="min-h-screen bg-gray-50">
+      <PageHeader 
+        title="Post an Ad"
+        rightContent={
+          <div className="text-sm text-gray-500">
+            Step {currentStep + 1} of {steps.length}
+          </div>
+        }
+      />
       <div className="max-w-3xl mx-auto px-4">
         {/* Progress Steps */}
         <div className="mb-8">

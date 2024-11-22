@@ -2,6 +2,7 @@ import React from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { Search as SearchIcon, Filter, SlidersHorizontal, MapPin, X } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { PageHeader } from '../components/PageHeader';
 
 // Reusing the listing type from CategoryPage
 interface Listing {
@@ -83,68 +84,17 @@ export function Search() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Search Header */}
-      <div className="bg-white sticky top-0 z-10 border-b shadow-sm">
-        <div className="max-w-7xl mx-auto px-4">
-          <form onSubmit={handleSearch} className="py-4">
-            <div className="flex gap-3">
-              <div className="relative flex-grow">
-                <input
-                  type="text"
-                  name="search"
-                  defaultValue={query}
-                  placeholder="Search for anything..."
-                  className="w-full pl-10 pr-4 py-3 rounded-lg border bg-gray-50"
-                />
-                <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-              </div>
-              <button
-                type="button"
-                onClick={() => setShowFilters(!showFilters)}
-                className="px-4 py-2 border rounded-lg flex items-center gap-2 bg-white hover:bg-gray-50"
-              >
-                <Filter className="w-5 h-5" />
-                <span className="hidden md:inline">Filters</span>
-              </button>
-            </div>
-
-            {/* Sort and View Options */}
-            <div className="flex items-center justify-between mt-4">
-              <div className="flex items-center gap-4">
-                <select
-                  value={selectedSort}
-                  onChange={(e) => setSelectedSort(e.target.value)}
-                  className="border rounded-lg px-3 py-1.5 text-sm bg-white"
-                >
-                  {sortOptions.map((option) => (
-                    <option key={option.value} value={option.value}>
-                      {option.label}
-                    </option>
-                  ))}
-                </select>
-              </div>
-              <div className="flex items-center gap-2 text-sm text-gray-600">
-                <span>{loading ? '...' : `${mockSearchResults.length} results`}</span>
-              </div>
-            </div>
-          </form>
-
-          {/* Active Filters */}
-          <div className="flex gap-2 overflow-x-auto pb-4 scrollbar-hide">
-            {category !== 'all' && (
-              <div className="flex items-center gap-1 px-3 py-1.5 bg-blue-50 text-blue-700 rounded-full text-sm">
-                <span>Category: {category}</span>
-                <button className="hover:bg-blue-100 rounded-full p-0.5">
-                  <X className="w-4 h-4" />
-                </button>
-              </div>
-            )}
-            <button className="px-3 py-1.5 border rounded-full text-sm text-gray-600 hover:bg-gray-50">
-              + Add Filter
-            </button>
-          </div>
-        </div>
-      </div>
+      <PageHeader 
+        title="Search"
+        rightContent={
+          <button
+            onClick={() => setShowFilters(!showFilters)}
+            className="p-2 hover:bg-gray-100 rounded-full"
+          >
+            <Filter className="w-5 h-5" />
+          </button>
+        }
+      />
 
       {/* Search Results */}
       <div className="max-w-7xl mx-auto px-4 py-6">

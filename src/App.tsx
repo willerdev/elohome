@@ -14,6 +14,7 @@ import { Link } from 'react-router-dom';
 import { User } from 'lucide-react';
 import { Search } from './pages/Search';
 import { PostListing } from './pages/PostListing';
+import { PageHeader } from '../components/PageHeader';
 
 export function App() {
   return (

@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Bell, Heart, MessageCircle, User, Plus, Search } from 'lucide-react';
+import { Bell, Heart, MessageCircle, User, Plus } from 'lucide-react';
 
 const categories = [
   { name: 'Motors', path: '/?category=motors', isNew: true },
@@ -18,7 +18,7 @@ export function Header() {
       <div className="max-w-7xl mx-auto">
         {/* Mobile Header */}
         <div className="md:hidden">
-          <div className="flex items-center justify-between px-4 py-2">
+          <div className="flex items-center justify-between px-4 py-3">
             <Link to="/" className="text-2xl font-bold text-red-600">ELOHOME</Link>
             <div className="flex items-center gap-4">
               <Link to="/notifications" className="text-gray-600">
@@ -29,23 +29,11 @@ export function Header() {
               </Link>
             </div>
           </div>
-          
-          {/* Mobile Search */}
-          <div className="px-4 py-2">
-            <div className="relative">
-              <input
-                type="text"
-                placeholder="What are you looking for?"
-                className="w-full pl-10 pr-4 py-5 bg-gray-100 rounded-full text-sm"
-              />
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-            </div>
-          </div>
         </div>
 
-        {/* Desktop Header - Keep existing code */}
+        {/* Desktop Header */}
         <div className="hidden md:block">
-          {/* Top Bar */}
+          {/* Keep existing desktop header code */}
           <div className="flex items-center justify-between px-4 py-2 border-b">
             <Link to="/" className="text-2xl font-bold text-red-600">ELOHOME</Link>
             
@@ -74,7 +62,7 @@ export function Header() {
               </Link>
             </div>
           </div>
-          
+
           {/* Categories */}
           <nav className="flex items-center gap-8 px-4 py-3 overflow-x-auto">
             {categories.map((category) => (

@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowRight, Upload, X } from 'lucide-react';
+import { ArrowRight, Upload, X, CheckCircle } from 'lucide-react';
 import { PageHeader } from '../components/PageHeader';
 import { useAuth } from '../contexts/AuthContext';
 import { supabase } from '../lib/supabase';
@@ -47,6 +47,8 @@ export function PostListing() {
     model: '',
     year: ''
   });
+
+  const [showConfirmationModal, setShowConfirmationModal] = React.useState(false);
 
   const steps = [
     {
@@ -149,7 +151,7 @@ export function PostListing() {
 
       if (error) throw error;
 
-      navigate('/my-ads');
+      setShowConfirmationModal(true);
     } catch (error) {
       console.error('Error creating listing:', error);
       alert('Error creating listing. Please try again.');
@@ -475,6 +477,35 @@ Additional Details:`;
           </button>
         </div>
       </div>
+      {showConfirmationModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-lg max-w-md w-full p-6">
+            <div className="text-center">
+              <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <CheckCircle className="w-8 h-8 text-green-500" />
+              </div>
+              <h2 className="text-2xl font-bold mb-2">Ad Posted Successfully!</h2>
+              <p className="text-gray-600 mb-6">
+                Your ad has been successfully posted and is now live on our platform.
+              </p>
+              <div className="flex gap-3 justify-center">
+                <button
+                  onClick={() => navigate('/my-ads')}
+                  className="px-4 py-2 bg-[#0487b3] text-white rounded-lg hover:bg-[#037299]"
+                >
+                  View My Ads
+                </button>
+                <button
+                  onClick={() => navigate('/')}
+                  className="px-4 py-2 border border-gray-200 rounded-lg hover:bg-gray-50"
+                >
+                  Back to Home
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

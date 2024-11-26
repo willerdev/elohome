@@ -1,11 +1,11 @@
 import React from 'react';
-import { Car, Home, Briefcase, Package, Sofa, Smartphone, Users, ArrowRight, Building2, Tv } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 const categories = [
   {
     title: 'Motors',
-    icon: Car,
+    icon: 'https://assets.jijistatic.com/art/attributes/categories/vehicles-x3.png',
     items: [
       { name: 'Cars', isNew: false },
       { name: 'Rental Cars', isNew: true },
@@ -14,20 +14,10 @@ const categories = [
     ],
     viewAll: 'All in Motors'
   },
-  {
-    title: 'Property for Rent',
-    icon: Home,
-    items: [
-      { name: 'Residential', isNew: false },
-      { name: 'Commercial', isNew: false },
-      { name: 'Rooms For Rent', isNew: false },
-      { name: 'Monthly Short Term', isNew: false },
-    ],
-    viewAll: 'All in Property for Rent'
-  },
+ 
   {
     title: 'Property for Sale',
-    icon: Home,
+    icon: 'https://assets.jijistatic.com/art/attributes/categories/property-x3.png',
     items: [
       { name: 'Residential', isNew: false },
       { name: 'Commercial', isNew: false },
@@ -38,7 +28,7 @@ const categories = [
   },
   {
     title: 'Classifieds',
-    icon: Package,
+    icon: 'https://assets.jijistatic.com/art/attributes/categories/electronics-x3.png',
     items: [
       { name: 'Electronics', isNew: false },
       { name: 'Computers & Networking', isNew: false },
@@ -48,8 +38,19 @@ const categories = [
     viewAll: 'All in Classifieds'
   },
   {
+    title: 'Property for Rent',
+    icon: 'https://assets.jijistatic.com/art/attributes/categories/property-x3.png',
+    items: [
+      { name: 'Residential', isNew: false },
+      { name: 'Commercial', isNew: false },
+      { name: 'Rooms For Rent', isNew: false },
+      { name: 'Monthly Short Term', isNew: false },
+    ],
+    viewAll: 'All in Property for Rent'
+  },
+  {
     title: 'Jobs',
-    icon: Briefcase,
+    icon: 'https://i.imgur.com/IcXRAVR.png',
     items: [
       { name: 'Accounting / Finance', isNew: false },
       { name: 'Engineering', isNew: false },
@@ -60,7 +61,7 @@ const categories = [
   },
   {
     title: 'Community',
-    icon: Users,
+    icon: 'https://assets.jijistatic.com/art/attributes/categories/services-x3.png',
     items: [
       { name: 'Freelancers', isNew: false },
       { name: 'Home Maintenance', isNew: false },
@@ -71,7 +72,7 @@ const categories = [
   },
   {
     title: 'Business & Industrial',
-    icon: Building2,
+    icon: 'https://assets.jijistatic.com/art/attributes/categories/jobs-x3.png',
     items: [
       { name: 'Businesses for Sale', isNew: false },
       { name: 'Construction', isNew: false },
@@ -82,7 +83,7 @@ const categories = [
   },
   {
     title: 'Home Appliances',
-    icon: Tv,
+    icon: 'https://assets.jijistatic.com/art/attributes/categories/home-x3.png',
     items: [
       { name: 'Large Appliances / White Goods', isNew: false },
       { name: 'Small Kitchen Appliances', isNew: false },
@@ -93,7 +94,7 @@ const categories = [
   },
   {
     title: 'Furniture, Home & Garden',
-    icon: Sofa,
+    icon: 'https://i.imgur.com/hAzpTC4.jpeg',
     items: [
       { name: 'Furniture', isNew: false },
       { name: 'Home Accessories', isNew: false },
@@ -104,7 +105,7 @@ const categories = [
   },
   {
     title: 'Mobile Phones & Tablets',
-    icon: Smartphone,
+    icon: 'https://assets.jijistatic.com/art/attributes/categories/phones-x3.png',
     items: [
       { name: 'Mobile Phones', isNew: false },
       { name: 'Mobile Phone & Tablet Accessories', isNew: false },
@@ -126,9 +127,9 @@ export function Categories() {
             to={`/category/${category.title.toLowerCase().split(' ')[0]}`}
             className="flex flex-col items-center gap-2 p-3 border border-gray-200 rounded-lg"
           >
-            <div className="w-12 h-12 bg-red-50 rounded-full flex items-center justify-center">
-              <category.icon className="w-8 h-8 text-red-600" />
-            </div>
+          
+              <img src={category.icon} alt={category.title} className="w-13 h-13 object-contain" />
+        
             <span className="text-xs text-center text-gray-700">
               {category.title.split(' ')[0]}
             </span>
@@ -143,7 +144,9 @@ export function Categories() {
           {categories.map((category) => (
             <div key={category.title} className="space-y-4 border border-gray-200 p-4 rounded-lg">
               <div className="flex items-center gap-2 text-lg font-semibold">
-                <category.icon className="w-5 h-5 text-[#0487b3] md:hidden" />
+                {typeof category.icon === 'string' ? (
+                  <img src={category.icon} alt={category.title} className="w-5 h-5 object-contain md:hidden" />
+                ) : null}
                 <span className="hidden md:block">{category.title}</span>
                 <span className="md:hidden text-sm">{category.title.split(' ')[0]}</span>
               </div>

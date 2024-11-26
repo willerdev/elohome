@@ -257,14 +257,14 @@ export function PostListing() {
               <label
                 htmlFor="image-upload"
                 className={`cursor-pointer flex flex-col items-center ${
-                  formData.images.length >= 8 ? 'opacity-50' : ''
+                  formData.images.length >= 20 ? 'opacity-50' : ''
                 }`}
               >
                 <Upload className="w-12 h-12 text-gray-400 mb-2" />
                 <span className="text-sm text-gray-600">
-                  Click to upload images ({formData.images.length}/8)
+                  Click to upload images ({formData.images.length}/20)
                 </span>
-                {formData.images.length >= 8 && (
+                {formData.images.length >= 20 && (
                   <span className="text-xs text-red-500 mt-1">
                     Maximum number of images reached
                   </span>

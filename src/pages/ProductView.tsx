@@ -466,7 +466,7 @@ export function ProductView() {
         <div className="space-y-6">
           <div>
             <h1 className="text-2xl font-bold mb-2">{product?.title}</h1>
-            <p className="text-3xl font-bold text-[#0487b3]">{product?.price}</p>
+            <p className="text-3xl font-bold text-[#0487b3]">{product?.price} Frw</p>
             <p className="text-gray-500">{product?.location}</p>
           </div>
 

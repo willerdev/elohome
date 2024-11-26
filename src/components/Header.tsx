@@ -13,9 +13,11 @@ import {
   Search,
   CheckCircle2,
   MessageSquare,
-  UserCircle
+  UserCircle,
+  FileText
 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
+import { Toast } from './Toast';
 
 const categories = [
   { name: 'Motors', path: '/?category=motors', isNew: true },
@@ -31,6 +33,8 @@ export function Header() {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [showDropdown, setShowDropdown] = useState(false);
+  const [showToast, setShowToast] = useState(false);
+  const [toastMessage, setToastMessage] = useState('');
 
   const menuItems = [
     { label: 'My Job Applications', path: '/job-applications' },
@@ -54,6 +58,15 @@ export function Header() {
       navigate('/login', { state: { from: '/post-ad' } });
     } else {
       navigate('/post-ad');
+    }
+  };
+
+  const handleMenuClick = (path: string) => {
+    if (!user) {
+      setToastMessage('Please log in first');
+      setShowToast(true);
+    } else {
+      navigate(path);
     }
   };
 
@@ -119,26 +132,51 @@ export function Header() {
             <Link to="/" className="text-2xl font-bold text-red-600">ELOHOME</Link>
             
             <div className="flex items-center gap-6">
-              {user && (
-                <>
-                  <Link to="/notifications" className="text-gray-600 hover:text-gray-900">
-                    <Bell className="w-5 h-5" />
-                  </Link>
-                  <Link to="/searches" className="text-gray-600 hover:text-gray-900">
-                    <span className="text-sm">My Searches</span>
-                  </Link>
-                  <Link to="/favorites" className="text-gray-600 hover:text-gray-900">
-                    <Heart className="w-5 h-5" />
-                  </Link>
-                  <Link to="/messages" className="text-gray-600 hover:text-gray-900">
-                    <MessageCircle className="w-5 h-5" />
-                  </Link>
-                  <Link to="/my-ads" className="text-gray-600 hover:text-gray-900">
-                    <span className="text-sm">My Ads</span>
-                  </Link>
-                </>
-              )}
-              
+              <Link
+                to={user ? '/notifications' : '/login'}
+                onClick={(e) => !user && (e.preventDefault(), setToastMessage('Please log in first'), setShowToast(true))}
+                className="flex flex-col items-center text-gray-600 hover:text-gray-900"
+              >
+                <Bell className="w-5 h-5" />
+                <span className="text-xs mt-1">Notifications</span>
+              </Link>
+
+              <Link
+                to={user ? '/searches' : '/login'}
+                onClick={(e) => !user && (e.preventDefault(), setToastMessage('Please log in first'), setShowToast(true))}
+                className="flex flex-col items-center text-gray-600 hover:text-gray-900"
+              >
+                <Search className="w-5 h-5" />
+                <span className="text-xs mt-1">My Searches</span>
+              </Link>
+
+              <Link
+                to={user ? '/favorites' : '/login'}
+                onClick={(e) => !user && (e.preventDefault(), setToastMessage('Please log in first'), setShowToast(true))}
+                className="flex flex-col items-center text-gray-600 hover:text-gray-900"
+              >
+                <Heart className="w-5 h-5" />
+                <span className="text-xs mt-1">Favorites</span>
+              </Link>
+
+              <Link
+                to={user ? '/chats' : '/login'}
+                onClick={(e) => !user && (e.preventDefault(), setToastMessage('Please log in first'), setShowToast(true))}
+                className="flex flex-col items-center text-gray-600 hover:text-gray-900"
+              >
+                <MessageCircle className="w-5 h-5" />
+                <span className="text-xs mt-1">Chats</span>
+              </Link>
+
+              <Link
+                to={user ? '/my-ads' : '/login'}
+                onClick={(e) => !user && (e.preventDefault(), setToastMessage('Please log in first'), setShowToast(true))}
+                className="flex flex-col items-center text-gray-600 hover:text-gray-900"
+              >
+                <FileText className="w-5 h-5" />
+                <span className="text-xs mt-1">My Ads</span>
+              </Link>
+
               {user ? (
                 <div className="relative">
                   <button
@@ -209,6 +247,12 @@ export function Header() {
           </nav>
         </div>
       </div>
+
+      <Toast 
+        message={toastMessage}
+        isVisible={showToast}
+        onClose={() => setShowToast(false)}
+      />
     </header>
   );
 }

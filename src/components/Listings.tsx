@@ -106,10 +106,6 @@ function ListingSection({ title, category }: { title: string; category: string }
                   <p className="text-sm text-gray-600 mb-1">{item.specs}</p>
                 )}
                 <p className="text-sm text-gray-600">{item.location}</p>
-                <div className="flex gap-4 text-sm text-gray-500 mt-2">
-                  <span>{item.views} views</span>
-                  <span>{item.messages} messages</span>
-                </div>
               </div>
             </Link>
           ))

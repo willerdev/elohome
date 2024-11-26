@@ -125,11 +125,11 @@ export function Hero() {
 
       {/* Desktop Hero - Keep existing code */}
       <div className="hidden md:block">
-        <div className="relative h-[400px]">
+        <div className="relative h-[300px]">
           <div className="absolute inset-0">
             <img
               src="https://images.unsplash.com/photo-1582407947304-fd86f028f716?auto=format&fit=crop&q=80"
-              className="w-full h-full object-cover"
+              className="w-full h-full object-cover object-center"
               alt="Dubai Skyline"
             />
             <div className="absolute inset-0 bg-black/40" />

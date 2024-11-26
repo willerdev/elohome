@@ -186,7 +186,7 @@ export function MyAds() {
                         >
                           {ad.title}
                         </Link>
-                        <p className="text-[#0487b3] font-bold">{ad.price}</p>
+                        <p className="text-[#0487b3] font-bold">{ad.price} Frw</p>
                         <p className="text-sm text-gray-500">{ad.location}</p>
                       </div>
                       <div className="flex items-center gap-2">

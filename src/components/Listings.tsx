@@ -99,7 +99,7 @@ function ListingSection({ title, category }: { title: string; category: string }
               </div>
               <div>
                 <p className="text-xl font-bold text-red-600 mb-1">
-                  AED {item.price}
+                   {item.price} Frw
                 </p>
                 <h3 className="font-medium text-base mb-1">{item.title}</h3>
                 {item.specs && (

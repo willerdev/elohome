@@ -8,7 +8,7 @@ import { supabase } from '../lib/supabase';
 // Import categories from Categories component
 const categories = [
   {
-    title: 'Motors',
+    title: 'Cars',
     items: ['Cars', 'Rental Cars', 'New Cars', 'Export Cars']
   },
   {
@@ -85,7 +85,7 @@ export function PostListing() {
     if (!files || !user) return;
 
     // Check if adding new images would exceed the limit
-    if (formData.images.length + files.length > 8) {
+    if (formData.images.length + files.length > 20) {
       alert('Maximum 8 images allowed per listing');
       return;
     }
@@ -140,7 +140,7 @@ export function PostListing() {
         location: formData.location,
         category: formData.category,
         images: formData.images,
-        status: 'pending'
+        status: 'active'
       };
 
       const { error } = await supabase
@@ -234,7 +234,7 @@ export function PostListing() {
               <textarea
                 value={formData.description}
                 onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
-                className="w-full p-2 border rounded-lg h-32"
+                className="w-full p-2 border rounded-lg h-62"
                 placeholder="Describe your item"
               />
             </div>
@@ -252,7 +252,7 @@ export function PostListing() {
                 className="hidden"
                 id="image-upload"
                 accept="image/*"
-                disabled={formData.images.length >= 8}
+                disabled={formData.images.length >= 20}
               />
               <label
                 htmlFor="image-upload"
@@ -304,7 +304,7 @@ export function PostListing() {
           <div className="space-y-6">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Price (AED)
+                Price (Frw)
               </label>
               <input
                 type="number"

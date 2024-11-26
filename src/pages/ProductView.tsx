@@ -132,6 +132,32 @@ export function ProductView() {
   const [reportDescription, setReportDescription] = useState('');
   const [showShareModal, setShowShareModal] = useState(false);
 
+  const handleSubmitReport = async () => {
+    if (!user || !product) return;
+    
+    try {
+      const { error } = await supabase
+        .from('reports')
+        .insert({
+          user_id: user.id,
+          listing_id: product.id,
+          reason: reportReason,
+          description: reportDescription,
+          created_at: new Date().toISOString()
+        });
+
+      if (error) throw error;
+      
+      setShowReportModal(false);
+      setReportReason('');
+      setReportDescription('');
+      alert('Report submitted successfully');
+    } catch (err) {
+      console.error('Error submitting report:', err);
+      alert('Failed to submit report. Please try again.');
+    }
+  };
+
   React.useEffect(() => {
     async function fetchProduct() {
       try {

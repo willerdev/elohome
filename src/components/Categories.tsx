@@ -161,13 +161,13 @@ export function Categories() {
                   </li>
                 ))}
               </ul>
-              <a
-                href="#"
+              <Link
+                to={`/category/${category.title.toLowerCase().split(' ')[0]}`}
                 className="hidden md:inline-flex items-center text-[#0487b3] hover:underline"
               >
                 {category.viewAll}
                 <ArrowRight className="w-4 h-4 ml-1" />
-              </a>
+              </Link>
             </div>
           ))}
         </div>

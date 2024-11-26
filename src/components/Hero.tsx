@@ -21,6 +21,11 @@ interface Suggestion {
   category: string;
 }
 
+interface RelatedSearch {
+  term: string;
+  path: string;
+}
+
 export function Hero() {
   const [searchQuery, setSearchQuery] = useState('');
   const { user } = useAuth();
@@ -28,6 +33,7 @@ export function Hero() {
   const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const suggestionsRef = useRef<HTMLDivElement>(null);
+  const [relatedSearches, setRelatedSearches] = useState<RelatedSearch[]>([]);
 
   const saveSearch = async (query: string) => {
     if (!user) return;
@@ -137,7 +143,7 @@ export function Hero() {
           
           <div className="relative max-w-7xl mx-auto px-4 py-16">
             <h1 className="text-4xl font-bold text-white mb-8">
-              The best place to buy your house, sell your car or find a job in Dubai
+              The best place to buy your house, sell your car or find a job in Elohome
             </h1>
             
             <div className="bg-white rounded-lg p-4">
@@ -178,22 +184,65 @@ export function Hero() {
                   />
                   <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
                   
-                  {showSuggestions && suggestions.length > 0 && (
+                  {(showSuggestions && suggestions.length > 0) || searchQuery ? (
                     <div className="absolute w-full bg-white mt-1 rounded-md shadow-lg border">
-                      {suggestions.map((suggestion) => (
-                        <div
-                          key={suggestion.id}
-                          className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
-                          onClick={() => {
-                            setSearchQuery(suggestion.title);
-                            setShowSuggestions(false);
-                          }}
-                        >
-                          {suggestion.title}
+                      {suggestions.length > 0 && (
+                        <>
+                          {suggestions.map((suggestion) => (
+                            <div
+                              key={suggestion.id}
+                              className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
+                              onClick={() => {
+                                setSearchQuery(suggestion.title);
+                                setShowSuggestions(false);
+                              }}
+                            >
+                              {suggestion.title}
+                            </div>
+                          ))}
+                          <div className="border-t" />
+                        </>
+                      )}
+                      
+                      <div className="p-3">
+                        <div className="text-xs text-gray-500 mb-2">Related Searches</div>
+                        <div className="flex flex-wrap gap-2">
+                          {searchQuery === 'iphone' ? (
+                            <>
+                              <Link 
+                                to="/search?q=iphone+13+pro"
+                                className="text-sm px-3 py-1.5 bg-gray-100 hover:bg-gray-200 rounded-full"
+                                onClick={() => setShowSuggestions(false)}
+                              >
+                                iphone 13 pro
+                              </Link>
+                              <Link 
+                                to="/search?q=iphone+11"
+                                className="text-sm px-3 py-1.5 bg-gray-100 hover:bg-gray-200 rounded-full"
+                                onClick={() => setShowSuggestions(false)}
+                              >
+                                iphone 11
+                              </Link>
+                              <Link 
+                                to="/search?q=iphone+14+pro"
+                                className="text-sm px-3 py-1.5 bg-gray-100 hover:bg-gray-200 rounded-full"
+                                onClick={() => setShowSuggestions(false)}
+                              >
+                                iphone 14 pro
+                              </Link>
+                              <Link 
+                                to="/search?q=iphone+12+pro+max"
+                                className="text-sm px-3 py-1.5 bg-gray-100 hover:bg-gray-200 rounded-full"
+                                onClick={() => setShowSuggestions(false)}
+                              >
+                                iphone 12 pro max
+                              </Link>
+                            </>
+                          ) : null}
                         </div>
-                      ))}
+                      </div>
                     </div>
-                  )}
+                  ) : null}
                 </div>
                 <button 
                   type="submit"

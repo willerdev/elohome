@@ -1,6 +1,9 @@
-import React from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Search } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '../contexts/AuthContext';
+import { supabase } from '../lib/supabase';
+import { debounce } from 'lodash';
 
 const searchCategories = [
   { name: 'All', path: '/' },
@@ -12,7 +15,90 @@ const searchCategories = [
   { name: 'Community', path: '/category/community' },
 ];
 
+interface Suggestion {
+  id: number;
+  title: string;
+  category: string;
+}
+
 export function Hero() {
+  const [searchQuery, setSearchQuery] = useState('');
+  const { user } = useAuth();
+  const navigate = useNavigate();
+  const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const suggestionsRef = useRef<HTMLDivElement>(null);
+
+  const saveSearch = async (query: string) => {
+    if (!user) return;
+
+    try {
+      const { error } = await supabase
+        .from('saved_searches')
+        .insert([
+          {
+            user_id: user.id,
+            query: query,
+            filters: {},
+            notifications_enabled: false,
+            last_updated: new Date().toISOString(),
+            new_listings_count: 0
+          }
+        ]);
+
+      if (error) throw error;
+    } catch (error) {
+      console.error('Error saving search:', error);
+    }
+  };
+
+  const handleSearch = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!searchQuery.trim()) return;
+
+    // Save search if user is logged in
+    if (user) {
+      await saveSearch(searchQuery);
+    }
+
+    // Navigate to search page with query
+    navigate(`/search?q=${encodeURIComponent(searchQuery)}`);
+  };
+
+  const fetchSuggestions = async (query: string) => {
+    if (!query.trim()) {
+      setSuggestions([]);
+      return;
+    }
+
+    try {
+      const { data, error } = await supabase
+        .from('listings')
+        .select('id, title, category')
+        .eq('status', 'active')
+        .ilike('title', `%${query}%`)
+        .limit(5);
+
+      if (error) throw error;
+      setSuggestions(data || []);
+    } catch (error) {
+      console.error('Error fetching suggestions:', error);
+    }
+  };
+
+  const debouncedFetchSuggestions = debounce(fetchSuggestions, 300);
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (suggestionsRef.current && !suggestionsRef.current.contains(event.target as Node)) {
+        setShowSuggestions(false);
+      }
+    }
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
   return (
     <>
       {/* Mobile Hero - Simple padding for search categories */}
@@ -77,19 +163,45 @@ export function Hero() {
                 </div>
               </div>
               
-              <div className="flex gap-2">
-                <div className="flex-grow relative">
+              <form onSubmit={handleSearch} className="flex gap-2">
+                <div className="flex-grow relative" ref={suggestionsRef}>
                   <input
                     type="text"
                     placeholder="Search for anything..."
                     className="w-full pl-10 pr-4 py-3 rounded-md border-gray-300 border"
+                    value={searchQuery}
+                    onChange={(e) => {
+                      setSearchQuery(e.target.value);
+                      setShowSuggestions(true);
+                      debouncedFetchSuggestions(e.target.value);
+                    }}
                   />
                   <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                  
+                  {showSuggestions && suggestions.length > 0 && (
+                    <div className="absolute w-full bg-white mt-1 rounded-md shadow-lg border">
+                      {suggestions.map((suggestion) => (
+                        <div
+                          key={suggestion.id}
+                          className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
+                          onClick={() => {
+                            setSearchQuery(suggestion.title);
+                            setShowSuggestions(false);
+                          }}
+                        >
+                          {suggestion.title}
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
-                <button className="bg-red-600 text-white px-8 py-2 rounded-md hover:bg-red-700">
+                <button 
+                  type="submit"
+                  className="bg-red-600 text-white px-8 py-2 rounded-md hover:bg-red-700"
+                >
                   Search
                 </button>
-              </div>
+              </form>
             </div>
           </div>
         </div>

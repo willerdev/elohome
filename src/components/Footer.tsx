@@ -33,7 +33,7 @@ export function Footer() {
             <MessageCircle className="w-6 h-6 text-gray-600" />
             <span className="text-xs text-gray-600">Chat</span>
           </Link>
-          <Link to="/login" className="flex flex-col items-center gap-1">
+          <Link to="/settings" className="flex flex-col items-center gap-1">
             <User className="w-6 h-6 text-gray-600" />
             <span className="text-xs text-gray-600">Account</span>
           </Link>

@@ -2,45 +2,34 @@ import React from 'react';
 import { Search, Phone, Video, MoreVertical, Send, Image as ImageIcon, ArrowLeft } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { PageHeader } from '../components/PageHeader';
+import { useAuth } from '../contexts/AuthContext';
+import { supabase } from '../lib/supabase';
 
-const chats = [
-  {
-    id: 1,
-    name: 'Premium Motors',
-    lastMessage: 'Is the Mercedes still available?',
-    time: '2m ago',
-    unread: 2,
-    avatar: 'P',
-  },
-  {
-    id: 2,
-    name: 'Dubai Properties',
-    lastMessage: 'When can we schedule a viewing?',
-    time: '1h ago',
-    unread: 0,
-    avatar: 'D',
-  },
-];
+interface Message {
+  id: number;
+  sender_id: string;
+  receiver_id: string;
+  content: string;
+  created_at: string;
+  chat_id: string;
+}
 
-const messages = [
-  {
-    id: 1,
-    sender: 'Premium Motors',
-    content: 'Is the Mercedes still available?',
-    time: '10:30 AM',
-    isSender: false,
-  },
-  {
-    id: 2,
-    sender: 'You',
-    content: 'Yes, it is! Would you like to schedule a viewing?',
-    time: '10:32 AM',
-    isSender: true,
-  },
-];
+interface Chat {
+  id: string;
+  participant_name: string;
+  last_message: string;
+  last_message_time: string;
+  unread_count: number;
+  participant_avatar: string;
+}
 
 export function Messages() {
-  const [selectedChat, setSelectedChat] = React.useState<typeof chats[0] | null>(null);
+  const { user } = useAuth();
+  const [chats, setChats] = React.useState<Chat[]>([]);
+  const [messages, setMessages] = React.useState<Message[]>([]);
+  const [selectedChat, setSelectedChat] = React.useState<Chat | null>(null);
+  const [newMessage, setNewMessage] = React.useState('');
+  const [loading, setLoading] = React.useState(true);
   const navigate = useNavigate();
   const messagesEndRef = React.useRef<HTMLDivElement>(null);
 
@@ -48,9 +37,96 @@ export function Messages() {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
+  // Fetch chats
   React.useEffect(() => {
-    scrollToBottom();
-  }, [messages]);
+    async function fetchChats() {
+      if (!user) return;
+
+      const { data, error } = await supabase
+        .from('chats')
+        .select('*')
+        .or(`participant1_id.eq.${user.id},participant2_id.eq.${user.id}`)
+        .order('last_message_time', { ascending: false });
+
+      if (error) {
+        console.error('Error fetching chats:', error);
+        return;
+      }
+
+      setChats(data);
+      setLoading(false);
+    }
+
+    fetchChats();
+  }, [user]);
+
+  // Subscribe to new messages
+  React.useEffect(() => {
+    if (!selectedChat || !user) return;
+
+    const subscription = supabase
+      .channel(`chat:${selectedChat.id}`)
+      .on('postgres_changes', {
+        event: 'INSERT',
+        schema: 'public',
+        table: 'messages',
+        filter: `chat_id=eq.${selectedChat.id}`,
+      }, (payload) => {
+        setMessages(prev => [...prev, payload.new as Message]);
+        scrollToBottom();
+      })
+      .subscribe();
+
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, [selectedChat, user]);
+
+  // Fetch messages for selected chat
+  React.useEffect(() => {
+    async function fetchMessages() {
+      if (!selectedChat) return;
+
+      const { data, error } = await supabase
+        .from('messages')
+        .select('*')
+        .eq('chat_id', selectedChat.id)
+        .order('created_at', { ascending: true });
+
+      if (error) {
+        console.error('Error fetching messages:', error);
+        return;
+      }
+
+      setMessages(data);
+      scrollToBottom();
+    }
+
+    fetchMessages();
+  }, [selectedChat]);
+
+  const sendMessage = async () => {
+    if (!newMessage.trim() || !selectedChat || !user) return;
+
+    const message = {
+      chat_id: selectedChat.id,
+      sender_id: user.id,
+      receiver_id: selectedChat.participant_id,
+      content: newMessage,
+      created_at: new Date().toISOString(),
+    };
+
+    const { error } = await supabase
+      .from('messages')
+      .insert([message]);
+
+    if (error) {
+      console.error('Error sending message:', error);
+      return;
+    }
+
+    setNewMessage('');
+  };
 
   return (
     <div className="h-[100dvh] bg-gray-50">

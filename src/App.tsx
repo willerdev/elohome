@@ -24,6 +24,8 @@ import { Bookmarks } from './pages/Bookmarks';
 import { Settings } from './pages/Settings';
 import { Searches } from './pages/Searches';
 import { Logout } from './pages/Logout';
+import { Terms } from './pages/Terms';
+import { Privacy } from './pages/Privacy';
 
 
 
@@ -111,6 +113,8 @@ export function App() {
                 <GetVerified />
               </ProtectedRoute>
             } />
+            <Route path="/terms" element={<Terms />} />
+            <Route path="/privacy" element={<Privacy />} />
           </Routes>
           <Footer />
         </div>

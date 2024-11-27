@@ -296,7 +296,7 @@ export function ProductView() {
     const offer = numericPrice * (1 - percentage / 100);
     return offer.toLocaleString('en-US', { 
       style: 'currency', 
-      currency: 'AED' 
+      currency: 'Frw' 
     });
   };
 
@@ -316,7 +316,8 @@ export function ProductView() {
             updated_at: new Date().toISOString(),
             participant1_id: user.id,
             participant2_id: product.seller.id,
-            listing_id: product.id
+            listing_id: product.id,
+            last_message: chatMessage,
           }
         ]);
 

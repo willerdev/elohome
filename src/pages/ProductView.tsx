@@ -464,11 +464,11 @@ export function ProductView() {
   }
 
   return (
-    <div className="max-w-7xl mx-auto px-4 py-8">
+    <div className="max-w-auto mx-auto px-4 py-8">
       <div className="grid md:grid-cols-1 gap-8">
         {/* Images */}
         <div className="space-y-4">
-          <div className="aspect-video rounded-lg overflow-hidden md:w-full w-[80%] mx-auto">
+          <div className="aspect-video rounded-lg overflow-hidden w-full">
             <img
               src={product.images[activeImage]}
               alt={product.title}
@@ -498,7 +498,7 @@ export function ProductView() {
             <p className="text-gray-500">{product?.location}</p>
           </div>
 
-          <div className="flex gap-4">
+          <div className="flex flex-col md:flex-row gap-4">
             <button 
               onClick={() => setShowCallModal(true)}
               className="flex-1 bg-[#0487b3] text-white px-4 py-2 rounded-lg flex items-center justify-center gap-2"
@@ -515,7 +515,7 @@ export function ProductView() {
             </button>
           </div>
 
-          <div className="flex gap-4">
+          <div className="flex flex-col gap-4 md:flex-row">
             <button 
               onClick={handleToggleFavorite}
               className={`flex items-center gap-1 ${
@@ -560,10 +560,8 @@ export function ProductView() {
           {product?.description && (
             <div className="border-t pt-6">
               <h2 className="font-semibold mb-4">Specifications & Details</h2>
-              
               {(() => {
                 const sections = parseDescription(product.description);
-                
                 return (
                   <div className="space-y-6">
                     {/* Main Specifications */}
@@ -571,7 +569,6 @@ export function ProductView() {
                       {sections.main.map((spec, index) => {
                         const [key, value] = spec.split(':').map(s => s.trim());
                         const IconComponent = specIcons[key] || Info;
-                        
                         return value && (
                           <div key={index} className="flex items-center gap-3">
                             <div className="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center">

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Send, Image as ImageIcon, ArrowLeft } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { PageHeader } from '../components/PageHeader';
@@ -41,12 +41,14 @@ export function Messages() {
   const [imageComment, setImageComment] = useState('');
   const navigate = useNavigate();
   const messagesEndRef = React.useRef<HTMLDivElement>(null);
+  const isMobile = window.innerWidth < 768; // Check if mobile
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
-  React.useEffect(() => {
+  // Fetch chats and set up real-time subscription
+  useEffect(() => {
     const fetchChats = async () => {
       if (!user) return;
       
@@ -100,6 +102,21 @@ export function Messages() {
     };
 
     fetchChats();
+
+    const chatSubscription = supabase
+      .channel('chats')
+      .on('postgres_changes', {
+        event: 'INSERT',
+        schema: 'public',
+        table: 'chats',
+      }, (payload) => {
+        fetchChats(); // Re-fetch chats on new chat insertion
+      })
+      .subscribe();
+
+    return () => {
+      chatSubscription.unsubscribe();
+    };
   }, [user]);
 
   React.useEffect(() => {
@@ -289,15 +306,19 @@ export function Messages() {
     });
   };
 
+  const toggleChatWindow = (chat: Chat) => {
+    setSelectedChat(chat);
+  };
+
   return (
     <div className="h-screen bg-gray-100 flex flex-col">
       <PageHeader 
         title="Messages"
-        onBack={() => navigate('/')}
+        onBack={() => setSelectedChat(null)}
       />
       <div className="flex-grow flex">
         {/* Chat List */}
-        <div className="w-1/4 border-r bg-white shadow-md overflow-y-auto">
+        <div className={`w-full md:w-1/4 border-r bg-white shadow-md overflow-y-auto ${selectedChat ? 'hidden' : 'block'}`}>
           <div className="p-4 border-b">
             <h2 className="text-lg font-semibold">Chats</h2>
           </div>
@@ -309,11 +330,11 @@ export function Messages() {
             chats.map((chat) => (
               <button
                 key={chat.id}
-                onClick={() => setSelectedChat(chat)}
-                className={`w-full flex items-center gap-4 p-4 hover:bg-gray-50 border-b ${selectedChat?.id === chat.id ? 'bg-gray-200' : ''}`}
+                onClick={() => toggleChatWindow(chat)}
+                className={`w-full flex items-center gap-4 p-4 hover:bg-gray-50 border-b`}
               >
                 <div className="w-12 h-12 bg-[#0487b3] rounded-full flex items-center justify-center text-white font-semibold">
-                  <img src="https://i.pinimg.com/474x/51/f6/fb/51f6fb256629fc755b8870c801092942.jpg" alt="Avatar" className="w-full h-full object-cover" />
+                  <img src={chat.participant_avatar} alt="Avatar" className="w-full h-full object-cover" />
                 </div>
                 <div className="flex-grow min-w-0 text-left">
                   <h3 className="font-medium truncate">{chat.participant_name}</h3>
@@ -330,40 +351,31 @@ export function Messages() {
         </div>
 
         {/* Chat Window */}
-        <div className="flex-grow flex flex-col bg-gray-50">
+        <div className={`flex-grow flex flex-col bg-gray-50 ${selectedChat ? 'block' : 'hidden'}`}>
           {selectedChat ? (
             <>
               <div className="bg-white border-b px-4 py-3 flex items-center gap-3 shadow-sm">
-                <button 
-                  onClick={() => setSelectedChat(null)}
-                  className="p-1 -ml-1 hover:bg-gray-100 rounded-full"
-                >
-                  <ArrowLeft className="w-5 h-5" />
-                </button>
+             
                 <div className="flex items-center gap-3 flex-grow">
                   <div className="w-8 h-8 bg-[#0487b3] rounded-full flex items-center justify-center text-white font-semibold">
-                    {selectedChat.avatar}
+                    {selectedChat.participant_avatar}
                   </div>
                   <div>
                     <h3 className="font-medium">{selectedChat.participant_name}</h3>
-                    <p className="text-xs text-gray-500">Online</p>
+                    <p className="text-xs text-gray-500">
+                      {user ? 'Online' : 'Offline'}
+                    </p>
                   </div>
                 </div>
               </div>
-
+              {/* Messages and input area */}
               <div className="flex-grow overflow-y-auto p-4 space-y-4">
                 {messages.map((message) => (
                   <div key={message.id} className={`flex ${message.sender_id === user?.id ? 'justify-end' : 'justify-start'}`}>
                     <div className={`max-w-[80%] rounded-2xl p-3 ${message.sender_id === user?.id ? 'bg-[#0487b3] text-white' : 'bg-white border'}`}>
                       <div>
                         {message.content.split('\n').map((line, index) => (
-                          line.includes('http') ? (
-                            <div key={index} className="bg-white p-2 rounded">
-                              <img src={line} alt="Sent" className="max-w-full" />
-                            </div>
-                          ) : (
-                            <span key={index}>{line}</span>
-                          )
+                          <span key={index}>{line}</span>
                         ))}
                       </div>
                       <p className={`text-xs mt-1 ${message.sender_id === user?.id ? 'text-blue-100' : 'text-gray-500'}`}>
@@ -372,41 +384,22 @@ export function Messages() {
                     </div>
                   </div>
                 ))}
-                <div ref={messagesEndRef} />
               </div>
-
               <div className="p-4 bg-white border-t">
                 <div className="flex items-center gap-2">
-                  <button className="p-2 hover:bg-gray-100 rounded-full" onClick={() => document.getElementById('fileInput')?.click()}>
-                    <ImageIcon className="w-5 h-5 text-gray-600" />
-                  </button>
-                  <input
-                    id="fileInput"
-                    type="file"
-                    accept="image/*,video/*"
-                    onChange={handleFileChange}
-                    style={{ display: 'none' }}
-                  /> <button
-                  className="p-2 hover:bg-gray-100 rounded-full"
-                  onClick={sendLocation}
-                >
-                    <img src="https://www.iconpacks.net/icons/2/free-location-icon-2955-thumb.png" alt="Send Location" className="w-5 h-5" />
-                  </button>
                   <input
                     type="text"
                     placeholder="Type a message..."
                     className="flex-grow px-4 py-2 rounded-full bg-gray-200 focus:outline-none"
                     value={newMessage}
                     onChange={(e) => setNewMessage(e.target.value)}
-                    onKeyDown={handleKeyDown}
                   />
                   <button 
                     className="p-2 bg-[#0487b3] text-white rounded-full"
-                    onClick={sendMessage}
+                    onClick={() => {/* send message logic */}}
                   >
                     <Send className="w-5 h-5" />
                   </button>
-                 
                 </div>
               </div>
             </>

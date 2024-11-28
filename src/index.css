@@ -32,3 +32,14 @@
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
   background: #037299;
 }
+
+/* Add to index.css */
+@media (max-width: 768px) {
+  .chat-window {
+    width: 90%;
+  }
+  
+  .chat-message {
+    font-size: 0.9rem;
+  }
+}

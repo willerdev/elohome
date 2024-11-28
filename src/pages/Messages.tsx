@@ -310,6 +310,25 @@ export function Messages() {
     setSelectedChat(chat);
   };
 
+  // In the messages rendering section, add this helper function
+  const renderMessageContent = (content: string) => {
+    const lines = content.split('\n');
+    return lines.map((line, index) => {
+      // Check if line is a Supabase storage URL
+      if (line.includes('supabase.co/storage/')) {
+        return (
+          <img 
+            key={index}
+            src={line.trim()}
+            alt="Shared image"
+            className="max-w-[200px] rounded-lg mt-1"
+          />
+        );
+      }
+      return <p key={index}>{line}</p>;
+    });
+  };
+
   return (
     <div className="h-screen bg-gray-100 flex flex-col">
       <PageHeader 
@@ -374,9 +393,7 @@ export function Messages() {
                   <div key={message.id} className={`flex ${message.sender_id === user?.id ? 'justify-end' : 'justify-start'}`}>
                     <div className={`max-w-[80%] rounded-2xl p-3 ${message.sender_id === user?.id ? 'bg-[#0487b3] text-white' : 'bg-white border'}`}>
                       <div>
-                        {message.content.split('\n').map((line, index) => (
-                          <span key={index}>{line}</span>
-                        ))}
+                        {renderMessageContent(message.content)}
                       </div>
                       <p className={`text-xs mt-1 ${message.sender_id === user?.id ? 'text-blue-100' : 'text-gray-500'}`}>
                         {new Date(message.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}

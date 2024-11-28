@@ -155,7 +155,7 @@ export function ProductView() {
       setReportDescription('');
       alert('Report submitted successfully');
     } catch (err) {
-      console.error('Error submitting report:', err);
+   //   console.error('Error submitting report:', err);
       alert('Failed to submit report. Please try again.');
     }
   };
@@ -209,7 +209,7 @@ export function ProductView() {
 
         setProduct(formattedProduct);
       } catch (err) {
-        console.error('Error fetching product:', err);
+     //   console.error('Error fetching product:', err);
         setError('Error loading product');
       } finally {
         setLoading(false);
@@ -240,7 +240,7 @@ export function ProductView() {
 
         setIsFavorited(!!data);
       } catch (error) {
-        console.error('Error checking favorite status:', error);
+      //  console.error('Error checking favorite status:', error);
       }
     }
 
@@ -284,7 +284,7 @@ export function ProductView() {
 
         setSimilarListings(formattedListings);
       } catch (error) {
-        console.error('Error fetching similar listings:', error);
+       // console.error('Error fetching similar listings:', error);
       }
     }
 
@@ -346,7 +346,7 @@ export function ProductView() {
       setChatMessage('');
       navigate('/messages');
     } catch (err) {
-      console.error('Error sending message:', err);
+     // console.error('Error sending message:', err);
       alert('Failed to send message. Please try again.');
     }
   };
@@ -377,7 +377,7 @@ export function ProductView() {
           .from('favorites')
           .insert({
             user_id: user.id,
-            listing_id: parseInt(product.id.toString()), // Ensure it's a number
+            listing_id: product.id, // Ensure it's a number
             created_at: new Date().toISOString()
           });
 
@@ -428,7 +428,7 @@ export function ProductView() {
       // Check if chat exists and set chat initiated status
       setIsChatInitiated(!!data);
       if (error && error.code !== 'PGRST116') {
-        console.error('Error fetching chat data:', error);
+      //  console.error('Error fetching chat data:', error);
       }
       // No need for else block, as setIsChatInitiated handles both cases
     };
@@ -464,11 +464,11 @@ export function ProductView() {
   }
 
   return (
-    <div className="max-w-auto mx-auto px-4 py-8">
+    <div className="max-w-7xl mx-auto px-4 py-8 ">
       <div className="grid md:grid-cols-1 gap-8">
         {/* Images */}
         <div className="space-y-4">
-          <div className="aspect-video rounded-lg overflow-hidden w-full">
+          <div className="aspect-video rounded-lg overflow-hidden ">
             <img
               src={product.images[activeImage]}
               alt={product.title}

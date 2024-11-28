@@ -13,7 +13,7 @@ interface FavoriteItem {
     price: string;
     location: string;
     images: string[];
-  }
+  };
 }
 
 export function Favorites() {
@@ -29,24 +29,34 @@ export function Favorites() {
     if (!user) return;
 
     try {
-      const { data, error } = await supabase
+      const { data: favoriteIds, error: idsError } = await supabase
         .from('favorites')
-        .select(`
-          id,
-          listing:listings (
-            id,
-            title,
-            price,
-            location,
-            images
-          )
-        `)
+        .select('listing_id')
         .eq('user_id', user.id);
 
+      if (idsError) throw idsError;
+
+      const listingIds = favoriteIds?.map(item => item.listing_id) || [];
+
+      const { data, error } = await supabase
+        .from('listings')
+        .select(`
+          id,
+          title,
+          price,
+          location,
+          images
+        `)
+        .in('id', listingIds);
+
       if (error) throw error;
-      setFavorites(data || []);
+      const formattedData: FavoriteItem[] = data?.map(item => ({
+        id: item.id,
+        listing: item
+      })) || [];
+      setFavorites(formattedData);
     } catch (error) {
-      console.error('Error fetching favorites:', error);
+     // console.error('Error fetching favorites:', error);
     } finally {
       setLoading(false);
     }
@@ -137,7 +147,7 @@ export function Favorites() {
                       </button>
                     </div>
                     
-                    <div className="flex gap-2 mt-4 pt-4 border-t">
+                    {/* <div className="flex gap-2 mt-4 pt-4 border-t">
                       <button className="flex items-center gap-1 text-gray-600 hover:text-[#0487b3]">
                         <MessageCircle className="w-5 h-5" />
                         <span>Message</span>
@@ -146,7 +156,7 @@ export function Favorites() {
                         <Share2 className="w-5 h-5" />
                         <span>Share</span>
                       </button>
-                    </div>
+                    </div> */}
                   </div>
                 </div>
               </div>

@@ -160,7 +160,7 @@ export function Header() {
               </Link>
 
               <Link
-                to={user ? '/chats' : '/login'}
+                to={user ? '/messages' : '/login'}
                 onClick={(e) => !user && (e.preventDefault(), setToastMessage('Please log in first'), setShowToast(true))}
                 className="flex flex-col items-center text-gray-600 hover:text-gray-900"
               >

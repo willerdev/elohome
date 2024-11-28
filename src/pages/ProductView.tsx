@@ -12,6 +12,7 @@ interface Product {
   description: string;
   images: string[];
   category: string;
+  user_id: string;
   specs: {
     year?: string;
     kilometers?: number;
@@ -131,6 +132,7 @@ export function ProductView() {
   const [reportReason, setReportReason] = useState('');
   const [reportDescription, setReportDescription] = useState('');
   const [showShareModal, setShowShareModal] = useState(false);
+  const [isChatInitiated, setIsChatInitiated] = React.useState(false);
 
   const handleSubmitReport = async () => {
     if (!user || !product) return;
@@ -183,6 +185,7 @@ export function ProductView() {
           description: data.description || '',
           images: data.images || [],
           category: data.category || '',
+          user_id: data.user_id,
           specs: data.specs || {},
           seller: {
             id: data.seller_id,
@@ -231,7 +234,7 @@ export function ProductView() {
           .single();
 
         if (error && error.code !== 'PGRST116') {
-          console.error('Error checking favorite status:', error);
+         
           return;
         }
 
@@ -267,6 +270,7 @@ export function ProductView() {
           description: item.description || '',
           images: item.images || [],
           category: item.category || '',
+          user_id: item.user_id,
           specs: item.specs || {},
           seller: {
             id: item.seller_id,
@@ -315,7 +319,7 @@ export function ProductView() {
             created_at: new Date().toISOString(),
             updated_at: new Date().toISOString(),
             participant1_id: user.id,
-            participant2_id: product.seller.id,
+            participant2_id: product?.user_id,
             listing_id: product.id,
             last_message: chatMessage,
           }
@@ -330,7 +334,7 @@ export function ProductView() {
           {
             chat_id: chatUuid,
             sender_id: user.id,
-            receiver_id: product.seller.id,
+            receiver_id: product?.user_id,
             content: chatMessage,
             created_at: new Date().toISOString()
           }
@@ -384,7 +388,7 @@ export function ProductView() {
         setIsFavorited(true);
       }
     } catch (error) {
-      console.error('Error toggling favorite:', error);
+    
       alert('Error updating favorite status. Please try again.');
     }
   };
@@ -408,6 +412,29 @@ export function ProductView() {
     }
     setShowShareModal(false);
   };
+
+  // Check if chat or offer has been initiated
+  React.useEffect(() => {
+    const checkChatStatus = async () => {
+      if (!user || !product) return;
+
+      const { data, error } = await supabase
+        .from('chats')
+        .select('id')
+        .eq('participant1_id', user.id)
+        .eq('listing_id', product.id)
+        .single();
+
+      // Check if chat exists and set chat initiated status
+      setIsChatInitiated(!!data);
+      if (error && error.code !== 'PGRST116') {
+        console.error('Error fetching chat data:', error);
+      }
+      // No need for else block, as setIsChatInitiated handles both cases
+    };
+
+    checkChatStatus();
+  }, [user, product]);
 
   if (loading) {
     return (
@@ -438,7 +465,7 @@ export function ProductView() {
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-8">
-      <div className="grid md:grid-cols-2 gap-8">
+      <div className="grid md:grid-cols-1 gap-8">
         {/* Images */}
         <div className="space-y-4">
           <div className="aspect-video rounded-lg overflow-hidden md:w-full w-[80%] mx-auto">
@@ -480,11 +507,11 @@ export function ProductView() {
               <span>Call</span>
             </button>
             <button 
-              onClick={() => setShowChatModal(true)}
-              className="flex-1 border border-[#0487b3] text-[#0487b3] px-4 py-2 rounded-lg flex items-center justify-center gap-2"
+              onClick={isChatInitiated ? () => navigate('/messages') : () => setShowChatModal(true)}
+              className={`flex-1 border border-[#0487b3] text-[#0487b3] px-4 py-2 rounded-lg flex items-center justify-center gap-2`}
             >
               <MessageCircle className="w-5 h-5" />
-              <span>Chat</span>
+              <span>{isChatInitiated ? 'Go to Messages' : 'Chat'}</span>
             </button>
           </div>
 

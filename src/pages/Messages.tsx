@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { Search, Phone, MoreVertical, Send, Image as ImageIcon, ArrowLeft } from 'lucide-react';
+import React, { useState } from 'react';
+import { Send, Image as ImageIcon, ArrowLeft } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { PageHeader } from '../components/PageHeader';
 import { useAuth } from '../contexts/AuthContext';
@@ -57,11 +57,11 @@ export function Messages() {
         .order('last_message_time', { ascending: false });
 
       if (chatsError) {
-        console.error('Error fetching chats:', chatsError);
+       // console.error('Error fetching chats:', chatsError);
         return;
       }
 
-      console.log('Fetched chats data:', chatsData);
+      //console.log('Fetched chats data:', chatsData);
 
       // Extract listing IDs from chats
       const listingIds = chatsData.map(chat => chat.listing_id).filter(id => id);
@@ -73,11 +73,11 @@ export function Messages() {
         .in('id', listingIds);
 
       if (listingsError) {
-        console.error('Error fetching listings:', listingsError);
+       // console.error('Error fetching listings:', listingsError);
         return;
       }
 
-      console.log('Fetched listings data:', listingsData);
+     // console.log('Fetched listings data:', listingsData);
 
       // Format chats with corresponding listings details
       const formattedChats = chatsData.map(chat => {
@@ -95,7 +95,7 @@ export function Messages() {
         };
       });
 
-      console.log('Formatted chats:', formattedChats);
+     /// console.log('Formatted chats:', formattedChats);
       setChats(formattedChats);
     };
 
@@ -134,10 +134,10 @@ export function Messages() {
         .order('created_at', { ascending: true });
 
       if (error) {
-        console.error('Error fetching messages:', error);
+        //console.error('Error fetching messages:', error);
         return;
       }
-      console.log('Fetched messages:', data);
+     // console.log('Fetched messages:', data);
       setMessages(data);
       scrollToBottom();
     };
@@ -175,7 +175,7 @@ export function Messages() {
         .upload(filePath, selectedFile);
 
       if (uploadError) {
-        console.error('Error uploading file:', uploadError);
+        //console.error('Error uploading file:', uploadError);
         return;
       }
 
@@ -193,7 +193,7 @@ export function Messages() {
       .insert([message]);
 
     if (error) {
-      console.error('Error sending message:', error);
+     // console.error('Error sending message:', error);
       return;
     }
 
@@ -290,54 +290,50 @@ export function Messages() {
   };
 
   return (
-    <div className="h-screen bg-gray-50 flex flex-col">
+    <div className="h-screen bg-gray-100 flex flex-col">
       <PageHeader 
         title="Messages"
         onBack={() => navigate('/')}
       />
       <div className="flex-grow flex">
         {/* Chat List */}
-        <div className="w-1/3 border-r overflow-y-auto">
-          <div className="p-4 border-b bg-white">
-            <div className="relative">
-              <input
-                type="text"
-                placeholder="Search messages"
-                className="w-full pl-10 pr-4 py-2 rounded-full bg-gray-100"
-              />
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-            </div>
+        <div className="w-1/4 border-r bg-white shadow-md overflow-y-auto">
+          <div className="p-4 border-b">
+            <h2 className="text-lg font-semibold">Chats</h2>
           </div>
-          {chats.map((chat) => (
-            <button
-              key={chat.id}
-              onClick={() => setSelectedChat(chat)}
-              className={`w-full flex items-center gap-4 p-4 hover:bg-gray-50 border-b ${selectedChat?.id === chat.id ? 'bg-gray-100' : ''}`}
-            >
-              <div className="w-12 h-12 bg-[#0487b3] rounded-full flex items-center justify-center text-white font-semibold">
-                {chat.avatar}
-              </div>
-              <div className="flex-grow min-w-0 text-left">
-                <div className="flex items-center justify-between">
+          {chats.length === 0 ? (
+            <div className="p-4 text-center text-gray-500">
+              <p>No conversations yet.</p>
+            </div>
+          ) : (
+            chats.map((chat) => (
+              <button
+                key={chat.id}
+                onClick={() => setSelectedChat(chat)}
+                className={`w-full flex items-center gap-4 p-4 hover:bg-gray-50 border-b ${selectedChat?.id === chat.id ? 'bg-gray-200' : ''}`}
+              >
+                <div className="w-12 h-12 bg-[#0487b3] rounded-full flex items-center justify-center text-white font-semibold">
+                  <img src="https://i.pinimg.com/474x/51/f6/fb/51f6fb256629fc755b8870c801092942.jpg" alt="Avatar" className="w-full h-full object-cover" />
+                </div>
+                <div className="flex-grow min-w-0 text-left">
                   <h3 className="font-medium truncate">{chat.participant_name}</h3>
-                  <span className="text-sm text-gray-500">{chat.last_message_time}</span>
+                  <p className="text-sm text-gray-600 truncate">{chat.last_message}</p>
                 </div>
-                <p className="text-sm text-gray-600 truncate">{chat.last_message}</p>
-              </div>
-              {chat.unread > 0 && (
-                <div className="w-5 h-5 bg-[#0487b3] rounded-full flex items-center justify-center text-white text-xs">
-                  {chat.unread}
-                </div>
-              )}
-            </button>
-          ))}
+                {chat.unread > 0 && (
+                  <div className="w-5 h-5 bg-[#0487b3] rounded-full flex items-center justify-center text-white text-xs">
+                    {chat.unread}
+                  </div>
+                )}
+              </button>
+            ))
+          )}
         </div>
 
         {/* Chat Window */}
-        <div className="flex-grow flex flex-col">
+        <div className="flex-grow flex flex-col bg-gray-50">
           {selectedChat ? (
             <>
-              <div className="bg-white border-b px-4 py-3 flex items-center gap-3">
+              <div className="bg-white border-b px-4 py-3 flex items-center gap-3 shadow-sm">
                 <button 
                   onClick={() => setSelectedChat(null)}
                   className="p-1 -ml-1 hover:bg-gray-100 rounded-full"
@@ -352,14 +348,6 @@ export function Messages() {
                     <h3 className="font-medium">{selectedChat.participant_name}</h3>
                     <p className="text-xs text-gray-500">Online</p>
                   </div>
-                </div>
-                <div className="flex items-center gap-2">
-                  <button className="p-2 hover:bg-gray-100 rounded-full">
-                    <Phone className="w-5 h-5" />
-                  </button>
-                  <button className="p-2 hover:bg-gray-100 rounded-full">
-                    <MoreVertical className="w-5 h-5" />
-                  </button>
                 </div>
               </div>
 
@@ -398,11 +386,16 @@ export function Messages() {
                     accept="image/*,video/*"
                     onChange={handleFileChange}
                     style={{ display: 'none' }}
-                  />
+                  /> <button
+                  className="p-2 hover:bg-gray-100 rounded-full"
+                  onClick={sendLocation}
+                >
+                    <img src="https://www.iconpacks.net/icons/2/free-location-icon-2955-thumb.png" alt="Send Location" className="w-5 h-5" />
+                  </button>
                   <input
                     type="text"
                     placeholder="Type a message..."
-                    className="flex-grow px-4 py-2 rounded-full bg-gray-100"
+                    className="flex-grow px-4 py-2 rounded-full bg-gray-200 focus:outline-none"
                     value={newMessage}
                     onChange={(e) => setNewMessage(e.target.value)}
                     onKeyDown={handleKeyDown}
@@ -413,6 +406,7 @@ export function Messages() {
                   >
                     <Send className="w-5 h-5" />
                   </button>
+                 
                 </div>
               </div>
             </>
@@ -430,7 +424,7 @@ export function Messages() {
               <img
                 src={URL.createObjectURL(selectedFile)}
                 alt="Selected"
-                className="max-w-full max-h-96 object-contain mb-4"
+                className="max-w-full max-h-96 object-contain mb-4 rounded-lg shadow-lg"
               />
               <input
                 type="text"
@@ -449,12 +443,6 @@ export function Messages() {
           )}
         </Modal>
       )}
-      <button
-        className="p-2 hover:bg-gray-100 rounded-full"
-        onClick={sendLocation}
-      >
-        <img src="path/to/location-icon.png" alt="Send Location" className="w-5 h-5" />
-      </button>
     </div>
   );
 }

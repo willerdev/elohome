@@ -91,11 +91,13 @@ function ListingSection({ title, category }: { title: string; category: string }
               className="flex-none w-[280px] group"
             >
               <div className="h-[210px] relative overflow-hidden rounded-lg mb-3">
-                <img
-                  src={item.images[0]}
-                  alt={item.title}
-                  className="absolute inset-0 w-full h-full object-cover"
-                />
+              <img
+        src={item.images && item.images.length > 0 
+          ? item.images[0] 
+          : 'https://via.placeholder.com/280x210'} // Fallback image
+        alt={item.title}
+        className="absolute inset-0 w-full h-full object-cover"
+      />
               </div>
               <div>
                 <p className="text-xl font-bold text-red-600 mb-1">
